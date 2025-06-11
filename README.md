@@ -46,9 +46,9 @@ https://github.com/andreyBodrey2012/web-larek-frontend
 
 ## Поля:
 
-- **products: Product[]** — массив объектов товаров для галереи (тип Product описывает свойства товара).
-- **cartItems: Product[]** — массив товаров, добавленных в корзину.
-- **previewItem: Product | null** — выбранный товар для показа в модальном окне (или null если ничего не выбрано).
+- **products: IProduct[]** — массив объектов товаров для галереи (тип IProduct описывает свойства товара).
+- **cartItems: IProduct[]** — массив товаров, добавленных в корзину.
+- **previewItem: IProduct | null** — выбранный товар для показа в модальном окне (или null если ничего не выбрано).
 
 ## Методы:
 
@@ -68,6 +68,8 @@ https://github.com/andreyBodrey2012/web-larek-frontend
 - **Методы — для рендеринга и обработки пользовательских действий.**
 - **Не хранит состояние приложения.**
 
+## Класс MainPageView
+
 ## Поля:
 
 - **container: HTMLElement** — корневой элемент главной страницы.
@@ -81,7 +83,7 @@ https://github.com/andreyBodrey2012/web-larek-frontend
 
 ## Методы:
 
-- **renderProducts(products: Product[]): void** — отображает карточки товаров в галерее.
+- **renderProducts(products: IProduct[]): void** — отображает карточки товаров в галерее.
 - **updateCartCounter(count: number): void** — обновляет счётчик товаров в корзине.
 - **bindProductClick(handler: (productId: string) => void): void** — устанавливает обработчик клика по карточке товара.
 - **bindCartIconClick(handler: () => void): void** — устанавливает обработчик клика по иконке корзины.
@@ -117,7 +119,7 @@ https://github.com/andreyBodrey2012/web-larek-frontend
 
 ## Методы:
 
-- **renderCartItems(cartItems: Product[]): void** — отображает список товаров в корзине.
+- **renderCartItems(cartItems: IProduct[]): void** — отображает список товаров в корзине.
 - **updateTotalPrice(total: number): void** — обновляет отображение общей стоимости.
 - **bindRemoveItem(handler: (productId: string) => void): void** — устанавливает обработчик удаления товара из корзины.
 - **bindOrder(handler: () => void): void** — устанавливает обработчик оформления заказа.
@@ -130,7 +132,7 @@ https://github.com/andreyBodrey2012/web-larek-frontend
 
 ## Конструктор:
 
-(eventEmitter: EventEmitter, templateId: string, product: Product)
+(eventEmitter: EventEmitter, templateId: string, product: IProduct)
 
 ## Методы:
 
