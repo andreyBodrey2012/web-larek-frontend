@@ -59,6 +59,10 @@ https://github.com/andreyBodrey2012/web-larek-frontend
 - **getCartCount(): number** — возвращает количество товаров в корзине.
 - **getCartTotal(): number** — рассчитывает и возвращает общую стоимость товаров в корзине.
 
+## Конструктор:
+
+(eventEmitter: EventEmitter, container: HTMLElement)
+
 ## Слой View
 
 ## Общие принципы:
@@ -68,7 +72,7 @@ https://github.com/andreyBodrey2012/web-larek-frontend
 - **Методы — для рендеринга и обработки пользовательских действий.**
 - **Не хранит состояние приложения.**
 
-## Класс MainPageView
+## Класс HomePageView
 
 ## Поля:
 
@@ -79,7 +83,7 @@ https://github.com/andreyBodrey2012/web-larek-frontend
 
 ## Конструктор:
 
-(eventEmitter: EventEmitter)
+(eventEmitter: EventEmitter, container: HTMLElement)
 
 ## Методы:
 
@@ -92,11 +96,11 @@ https://github.com/andreyBodrey2012/web-larek-frontend
 
 ## Поля:
 
-- **modalContainer: HTMLElement** — контейнер модального окна.
+- **container: HTMLElement** — контейнер модального окна.
 
 ## Конструктор:
 
-(eventEmitter: EventEmitter)
+(eventEmitter: EventEmitter, container: HTMLElement)
 
 ## Методы:
 
@@ -109,13 +113,13 @@ https://github.com/andreyBodrey2012/web-larek-frontend
 
 ## Поля:
 
-- **cartContainer: HTMLElement** — контейнер списка товаров корзины.
+- **container: HTMLElement** — контейнер списка товаров корзины.
 - **totalPriceElement: HTMLElement** — элемент для отображения общей стоимости.
 - **orderButton: HTMLElement** — кнопка оформления заказа.
 
 ## Конструктор:
 
-(eventEmitter: EventEmitter)
+(eventEmitter: EventEmitter, container: HTMLElement)
 
 ## Методы:
 
@@ -132,12 +136,50 @@ https://github.com/andreyBodrey2012/web-larek-frontend
 
 ## Конструктор:
 
-(eventEmitter: EventEmitter, templateId: string, product: IProduct)
+(eventEmitter: EventEmitter, container: HTMLElement)
 
 ## Методы:
 
-- **render(): HTMLElement** — создаёт и возвращает HTML-элемент карточки, используя указанный шаблон и данные товара.
+- **render(type: CardTypeView): HTMLElement** — создаёт и возвращает HTML-элемент карточки, используя указанный шаблон и данные товара.
 - **bindClick(handler: (productId: string) => void): void** — устанавливает обработчик клика по карточке.
+
+## Класс OrderFormView
+
+## Поля:
+
+- **paymentMethodButton: HTMLElement** — кнопки выбора способа оплаты.
+- **address: HTMLElement** — поле для ввода адреса доставки.
+- **nextButton: HTMLElement** — кнопка для перехода к следуещему этапу оформления заказа.
+- **email: HTMLElement** — поле для ввода электронной почты.
+- **numberPhone: HTMLElement** — поле для ввода номер телефона.
+- **orderButton: HTMLElement** — кнопка для оформления заказа.
+
+## Конструктор:
+
+(eventEmitter: EventEmitter, container: HTMLElement)
+
+## Методы:
+
+- **bindPayment(handler: () => void): void** — устанавливает обработчик на кнопки выбора способа оплаты.
+- **bindNextButton(handler: () => void): void** — устанавливает обработчик на кнопку перевода на следующий попап оформления.
+- **bindEmail(handler: () => void): void** — устанавливает обработчик для поля ввода элетронной почты.
+- **bindNumber(handler: () => void): void** — устанавливает обработчик для поля ввода номер телефона.
+- **bindOrder(handler: () => void): void** — устанавливает обработчик для кнопкм оформления заказа.
+
+## Класс OrderSuccessFormView
+
+## Поля:
+
+- **total: number** — списанная сумма.
+- **successButton: HTMLElement** — кнопа закрытия попапа.
+
+## Конструктор:
+
+(eventEmitter: EventEmitter, container: HTMLElement)
+
+## Методы:
+
+- **bindSuccessButton(handler: () => void): void** — устанавливает обработчик н кнопку закрытия окна.
 
 ## Запуск проекта
 
