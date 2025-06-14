@@ -61,7 +61,7 @@ https://github.com/andreyBodrey2012/web-larek-frontend
 
 ## Конструктор:
 
-(eventEmitter: EventEmitter, container: HTMLElement)
+(eventEmitter: EventEmitter)
 
 ## Слой View
 
@@ -89,7 +89,6 @@ https://github.com/andreyBodrey2012/web-larek-frontend
 
 - **renderProducts(products: IProduct[]): void** — отображает карточки товаров в галерее.
 - **updateCartCounter(count: number): void** — обновляет счётчик товаров в корзине.
-- **bindProductClick(handler: (productId: string) => void): void** — устанавливает обработчик клика по карточке товара.
 - **bindCartIconClick(handler: () => void): void** — устанавливает обработчик клика по иконке корзины.
 
 ## Класс ModalView
@@ -125,7 +124,6 @@ https://github.com/andreyBodrey2012/web-larek-frontend
 
 - **renderCartItems(cartItems: IProduct[]): void** — отображает список товаров в корзине.
 - **updateTotalPrice(total: number): void** — обновляет отображение общей стоимости.
-- **bindRemoveItem(handler: (productId: string) => void): void** — устанавливает обработчик удаления товара из корзины.
 - **bindOrder(handler: () => void): void** — устанавливает обработчик оформления заказа.
 
 ## Класс CardView
@@ -141,7 +139,8 @@ https://github.com/andreyBodrey2012/web-larek-frontend
 ## Методы:
 
 - **render(type: CardTypeView): HTMLElement** — создаёт и возвращает HTML-элемент карточки, используя указанный шаблон и данные товара.
-- **bindClick(handler: (productId: string) => void): void** — устанавливает обработчик клика по карточке.
+- **bindRemoveItem(handler: (productId: string) => void): void** — устанавливает обработчик удаления товара из корзины.
+- **bindClick(handler: (productId: string) => void): void** — устанавливает обработчик клика по интерактивному элементу карточки.
 
 ## Класс OrderFormView
 

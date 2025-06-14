@@ -65,9 +65,6 @@ export class HomePageView implements IBaseView {
   // обновляет счётчик товаров в корзине.
   updateCartCounter(count: number): void {}
 
-  // устанавливает обработчик клика по карточке товара.
-  bindProductClick(handler: (productId: string) => void): void {}
-
   // устанавливает обработчик клика по иконке корзины.
   bindCartIconClick(handler: () => void): void {}
 }
@@ -107,9 +104,6 @@ export class CartView implements IBaseView {
   // обновляет отображение общей стоимости.
   updateTotalPrice(total: number): void {}
 
-  // устанавливает обработчик удаления товара из корзины.
-  bindRemoveItem(handler: (productId: string) => void): void {}
-
   // устанавливает обработчик оформления заказа.
   bindOrder(handler: () => void): void {}
 }
@@ -131,7 +125,10 @@ export class CardView implements IBaseView {
   // создаёт и возвращает HTML-элемент карточки, используя указанный шаблон и данные товара.
   render(type: CardTypeView): void {}
 
-  // устанавливает обработчик клика по карточке.
+  // устанавливает обработчик удаления товара из корзины.
+  bindRemoveItem(handler: (productId: string) => void): void {}
+
+  // устанавливает обработчик клика по интерактивному элементу карточки.
   bindClick(handler: (productId: string) => void): void {}
 }
 
