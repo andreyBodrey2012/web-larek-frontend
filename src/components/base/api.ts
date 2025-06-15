@@ -14,7 +14,7 @@ export class Api {
     };
   }
 
-  protected handleResponse(response: Response): Promise<object> {
+  protected handleResponse<T>(response: Response): Promise<T> {
     if (response.ok) return response.json();
     else
       return response
@@ -23,10 +23,11 @@ export class Api {
   }
 
   get<T> (uri: string): Promise<T> {
+    // Я мегатупой клоун, ненавижу себя.
     return fetch(this.baseUrl + uri, {
       ...this.options,
       method: 'GET',
-    }).then(this.handleResponse) as T;
+    }).then(this.handleResponse<T>);
   }
 
   post(uri: string, data: object, method: ApiPostMethods = 'POST') {
@@ -38,6 +39,6 @@ export class Api {
   }
 }
 
-export const getProductList = (api: Api):IProduct[] => {
-  return api.get('/product/');
+export const getProductList = (api: Api) => {
+  return api.get<ApiListResponse<IProduct>>('/product/');
 }

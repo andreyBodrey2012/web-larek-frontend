@@ -10,9 +10,11 @@ const homePageView = new HomePageView(
 	document.querySelector('.page')
 );
 const api = new Api(process.env.API_ORIGIN);
-const products: IProduct[] = []
 // const cardView = new CardView(eventEmitter, {gallery: document.querySelector('.card'), popup: document.querySelector('.card'), cart: document.querySelector('.card')}, products)
 
-function Init() {
-  console.log(getProductList(api));
+const init = async () => {
+  const res = await getProductList(api);
+  homePageView.renderProducts(res.items);
 }
+
+init().catch(console.error)
