@@ -23,7 +23,6 @@ export class Api {
   }
 
   get<T> (uri: string): Promise<T> {
-    // Я мегатупой клоун, ненавижу себя.
     return fetch(this.baseUrl + uri, {
       ...this.options,
       method: 'GET',

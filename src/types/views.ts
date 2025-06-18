@@ -10,6 +10,7 @@ export class IBaseView {
 
 export interface IBasePopupView extends IBaseView {
 	isOpen: boolean;
+	content: HTMLElement;
 	render: (content: HTMLElement) => void;
 	open: () => {};
 	close: () => {};

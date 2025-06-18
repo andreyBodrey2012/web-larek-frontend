@@ -1,4 +1,5 @@
 import {
+	EventTypes,
 	IBasePopupView,
 	IBaseView,
 	ICartWidgetView,
@@ -15,11 +16,14 @@ export class HomePageView implements IBaseView {
 		this.container = container;
 
 		this.gallery = container.querySelector('.gallery');
+		this.cartCounter = container.querySelector('.header__basket-counter');
+
+		container.querySelector('button.header__basket').addEventListener("click", this.bindCartIconClick.bind(this));
 	}
 
 	container: HTMLElement;
 	eventEmitter: IEvents;
-	cartCounter: ICartWidgetView;
+	cartCounter: HTMLElement;
 	gallery: HTMLElement;
 	productsContainer: IListItemsView;
 	cartIcon: HTMLElement;
@@ -31,8 +35,12 @@ export class HomePageView implements IBaseView {
     }
 
 	// обновляет счётчик товаров в корзине.
-	updateCartCounter(count: number): void {}
+	updateCartCounter(count: number): void {
+		this.cartCounter.innerText = String(count);
+	}
 
 	// устанавливает обработчик клика по иконке корзины.
-	bindCartIconClick(handler: () => void): void {}
+	bindCartIconClick(): void {
+		this.eventEmitter.emit(EventTypes.CartSelect);
+	}
 }
