@@ -2,7 +2,6 @@ import {
 	EventTypes,
 	IBasePopupView,
 	IBaseView,
-	ICartWidgetView,
 	IEvents,
 	IListItemsView,
 	IProduct,

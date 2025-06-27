@@ -1,5 +1,5 @@
 import { IEvents } from './events';
-import { IOrder, IOrderForm, IProduct } from './models';
+import { IProduct } from './models';
 
 export class IBaseView {
   constructor(eventEmitter: IEvents, container: HTMLElement) {}

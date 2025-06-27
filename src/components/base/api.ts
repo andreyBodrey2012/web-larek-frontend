@@ -1,4 +1,4 @@
-import type { ApiListResponse, ApiPostMethods, IProduct } from '../../types/index';
+import type { ApiListResponse, ApiPostMethods, IOrder, IProduct } from '../../types/index';
 
 export class Api {
   readonly baseUrl: string;
@@ -29,15 +29,19 @@ export class Api {
     }).then(this.handleResponse<T>);
   }
 
-  post(uri: string, data: object, method: ApiPostMethods = 'POST') {
+  post<T, P extends object> (uri: string, data: P, method: ApiPostMethods = 'POST'): Promise<T> {
     return fetch(this.baseUrl + uri, {
       ...this.options,
       method,
       body: JSON.stringify(data),
-    }).then(this.handleResponse);
+    }).then(this.handleResponse<T>);
   }
 }
 
 export const getProductList = (api: Api) => {
   return api.get<ApiListResponse<IProduct>>('/product/');
+}
+
+export const createOrder = (api: Api, data: IOrder) => {
+  return api.post<{id: string; total: number}, IOrder>('/order', data);
 }

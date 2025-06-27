@@ -8,8 +8,14 @@ export interface IProduct {
 	price: number;
 }
 
-export type PaymentTypes = 'Онлайн' | 'При получении';
+// export type PaymentTypes = 'Онлайн' | 'При получении';
+export type PaymentTypes = 'online' | 'cash';
 export type CategoryColors = Record<string, string>;
+export type OrderStepTypes = 'order' | 'contacts';
+export type RenderOrderData = {
+	data: IOrderForm | IContactsForm;
+	step: OrderStepTypes;
+};
 
 // Описание попапа оформления заказа
 export interface IOrder {
@@ -21,53 +27,36 @@ export interface IOrder {
 	items: Array<IProduct['id']>;
 }
 
-export interface IOrderForm {
-	payment: IOrder['payment'];
-	email: IOrder['email'];
-	phone: IOrder['phone'];
-	address: IOrder['address'];
-	errors: Record<
-		'payment' | 'email' | 'phone' | 'address',
-		string | null
-	> | null;
-}
+type FormErrors<T extends object> = {
+	[P in keyof T]?: string | null;
+};
+
+type FormFeilds<T extends object> = {
+	values: Partial<T>;
+	errors: FormErrors<T>;
+	isValid?: boolean;
+};
+
+
+export type EventInputFormData<T extends object> = {
+	name: keyof T;
+	value: T[keyof T];
+};
+
+
+export interface IOrderForm
+	extends FormFeilds<Pick<IOrder, 'address' | 'payment'>> {}
+export interface IContactsForm
+	extends FormFeilds<Pick<IOrder, 'email' | 'phone'>> {}
+
+export type IOrderFormKeys = keyof IOrderForm;
 
 export interface AppState {
 	products: Array<IProduct>;
 	cartItems: Array<IProduct['id']>;
 	previewItemId: IProduct['id'] | null;
-}
-
-export function handlerClosePopup(evt: Event) {
-	if (evt) {
-		if (evt.currentTarget === evt.target) {
-			// closePopup(evt.target.closest('.modal_active'));
-		}
-	}
-}
-
-export function closePopup(el: HTMLElement, classOpened = 'modal_active') {
-	el.classList.remove(classOpened);
-	el.removeEventListener('click', handlerClosePopup);
-	document.removeEventListener('keydown', handlerKeyClosePopup);
-}
-
-function handlerKeyClosePopup(evt: KeyboardEvent) {
-	if (evt.code == 'Escape') {
-		closePopup(document.querySelector('.modal_active'));
-	}
-}
-
-export function openPopup(
-	element: {
-		classList: { add: (arg0: string) => void };
-		addEventListener: (arg0: string, arg1: (evt: any) => void) => void;
-	},
-	classOpened = 'modal_active'
-) {
-	return () => {
-		element.classList.add(classOpened);
-		element.addEventListener('click', handlerClosePopup);
-		document.addEventListener('keydown', handlerKeyClosePopup);
+	orderForm: {
+		data: IOrderForm & IContactsForm | null;
+		step: OrderStepTypes;
 	};
 }

@@ -121,10 +121,10 @@
 							<div class="order__field">
 								<h2 class="modal__title">Способ оплаты</h2>
 								<div class="order__buttons">
-									<button type="button" class="button button_alt">
+									<button type="button" class="button button_alt" id="online">
 										Онлайн
 									</button>
-									<button type="button" class="button button_alt">
+									<button type="button" class="button button_alt" id="on_place">
 										При получении
 									</button>
 								</div>
@@ -135,11 +135,12 @@
 									class="form__input"
 									type="text"
 									placeholder="Введите адрес"
+									id="address"
 								/>
 							</label>
 						</div>
 						<div class="modal__actions">
-							<button disabled class="button">Далее</button>
+							<button disabled class="button" id="next" type="button">Далее</button>
 						</div>
 					</form>
 				</div>
@@ -156,17 +157,18 @@
 								<span class="form__label modal__title">Email</span>
 								<input
 									class="form__input"
-									type="text"
+									type="email"
 									placeholder="Введите Email"
+									id="input__email"
 								/>
 							</label>
 							<label class="order__field">
 								<span class="form__label modal__title">Телефон</span>
-								<input class="form__input" type="text" placeholder="+7 (" />
+								<input class="form__input" type="number" id="input__phone" placeholder="+7 (" />
 							</label>
 						</div>
 						<div class="modal__actions">
-							<button disabled class="button">Оплатить</button>
+							<button disabled class="button" id="buy" type="button">Оплатить</button>
 						</div>
 					</form>
 				</div>
@@ -177,7 +179,7 @@
 			<div class="modal__container">
 				<button class="modal__close" aria-label="закрыть"></button>
 				<div class="modal__content">
-					<div class="order-success">
+					<div class="order-success" id="succes__order">
 						<h2 class="film__title">Заказ оформлен</h2>
 						<p class="film__description">Списано 153 250 синапсов</p>
 						<button class="button order-success__close">

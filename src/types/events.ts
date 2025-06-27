@@ -1,13 +1,17 @@
 export enum EventTypes {
-	ItemAdded = 'item:added',
+	ItemClicked = 'item:clicked',
+	ItemAdded = 'item:clicked',
 	ItemRemoved = 'item:removed',
 	ItemSelect = 'card:select',
 	ModalClose = 'modal:close',
 	CartSelect = 'cart:select',
 	PaymentSelect = 'payment:select',
-	NextButtonSelect = 'nextbutton:select',
-	EmailSelect = 'email:select',
-	NumberSelect = 'number:select',
+	ActionButtonClicked = 'actionButton:clicked',
+	InputForm = 'form:input',
+	orderClicked = 'order:clicked',
+	bindPayment = 'bindPayment',
+	orderSuccessClicked = 'ordersuccess:clicked',
+	orderSuccessButtonClicked = 'orderSuccessButtonClicked:clicked',
 }
 
 // Типы для событийной системы
@@ -18,7 +22,6 @@ export type EmitterEvent = {
 	eventName: string;
 	data: unknown;
 };
-
 
 // Интерфейс брокера событий
 export abstract class IEvents {
@@ -45,28 +48,28 @@ export class EventEmitter extends IEvents {
 	constructor() {
 		super();
 
-    this.callbacks = {};
+		this.callbacks = {};
 	}
 
 	callbacks: {
-    [key in EventTypes]?: Array<Function>
-  };
+		[key in EventTypes]?: Array<Function>;
+	};
 
 	on<T extends object>(event: EventTypes, callback: (data: T) => void): void {
-    if (event in this.callbacks) {
-      this.callbacks[event].push(callback)
-    } else {
-      this.callbacks[event] = [callback]
-    }
-  }
+		if (event in this.callbacks) {
+			this.callbacks[event].push(callback);
+		} else {
+			this.callbacks[event] = [callback];
+		}
+	}
 
 	emit<T extends object>(event: EventTypes, data?: T): void {
-    if (event in this.callbacks) {
-      this.callbacks[event].forEach((cb) => {
-        cb(data);
-      })
-    }
-  }
+		if (event in this.callbacks) {
+			this.callbacks[event].forEach((cb) => {
+				cb(data);
+			});
+		}
+	}
 	trigger<T extends object>(
 		event: EventTypes,
 		context?: Partial<T>

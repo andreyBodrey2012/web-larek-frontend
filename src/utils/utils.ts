@@ -4,7 +4,9 @@ import type {
   PropertyFilter,
   DatasetScheme,
   Props,
+  IProduct,
 } from '../types/index';
+import { settings } from './constants';
 
 export function pascalToKebab(value: string): string {
   return value.replace(/([a-z0-9])([A-Z])/g, '\$1-\$2').toLowerCase();
@@ -150,4 +152,18 @@ export function createElement<T extends HTMLElement>(
     }
   }
   return element;
+}
+
+export function fillPriceWithCurrency(val: number) { return `${val} ${settings.currency}` };
+
+export function getTemplateElementBySelector(selector: string): HTMLElement {
+  return document
+  .querySelector<HTMLTemplateElement>(selector)
+  .content.cloneNode(true) as HTMLElement
+}
+
+export function getTotal(items: Array<IProduct>, cartItemIds: Array<IProduct["id"]>): number {
+  return items
+  .filter(({ id }) => cartItemIds.includes(id))
+  .reduce((acc, { price }) => acc + price, 0);
 }

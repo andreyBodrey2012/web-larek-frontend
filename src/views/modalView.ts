@@ -23,34 +23,35 @@ export class ModalView implements IBaseView {
 			}
 		});
 		if (container.querySelector('.card__button') !== null) {
-      console.log('101')
 			document.querySelector('.card__button').addEventListener('click', () => {
 				this.close;
 			});
-		} else {
-      console.log('Андрей отсталый даун');
-      // Какой же я тупой не могу, ничего по жизни не умею кроме как играть в игры, вырасту ни кем, да и я только вред приношу, стою ли я миллионов которые на меня тратят родители? Ответ очивиден - нет.
-    }
+		}
+		
 	}
 
 	container: HTMLElement;
 	content: HTMLElement;
 	eventEmitter: IEvents;
+	isOpen: boolean;
 
 	// отображает переданный контент в модальном окне.
 	render(content: HTMLElement): void {
+		this.content.innerHTML = "";
 		this.content.append(content);
 	}
 
 	// открывает модальное окно.
 	open(): void {
 		this.container.classList.add('modal_active');
+		this.isOpen = true;
 	}
 
 	// закрывает модальное окно.
 	close(): void {
 		this.container.classList.remove('modal_active');
 		this.content.innerHTML = '';
+		this.isOpen = false;
 	}
 
 	// устанавливает обработчик закрытия.

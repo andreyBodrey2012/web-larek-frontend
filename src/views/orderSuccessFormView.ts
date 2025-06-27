@@ -1,14 +1,24 @@
-import { IBaseView, IEvents } from "../types";
+import { EventTypes, IEvents } from '../types';
+import { ModalView } from './modalView';
 
-// Описание попапа оформления заказа ( ввод электронной почты и номера телефона )
-export class OrderSuccessFormView implements IBaseView {
-  constructor(eventEmitter: IEvents, container: HTMLElement) {}
+// Описание попапа оформленого попапа
+export class OrderSuccessFormView extends ModalView {
+	constructor(eventEmitter: IEvents, container: HTMLElement) {
+		super(eventEmitter, container);
+	}
 
-	container: HTMLElement;
-	eventEmitter: IEvents;
-  total: number;
-  successButton: HTMLElement;
+	totalPrice: number;
+	content: HTMLElement;
+	successButton: HTMLElement;
 
-  // устанавливает обработчик н кнопку закрытия окна.
-  bindSuccessButton(handler: () => void): void {}
+	render(content: HTMLElement, totalPrice?: number): void {
+    content.querySelector<HTMLElement>(".order-success__description").innerText = totalPrice ? `Списано ${totalPrice} синапсов` : "Списано 0 синапсов";
+    content.querySelector<HTMLButtonElement>("button.order-success__close").addEventListener("click", this.bindSuccessButton.bind(this));
+
+    super.render(content);
+  }
+	// устанавливает обработчик на кнопку закрытия окна.
+	bindSuccessButton(): void {
+    this.eventEmitter.emit(EventTypes.orderSuccessButtonClicked);
+  }
 }
