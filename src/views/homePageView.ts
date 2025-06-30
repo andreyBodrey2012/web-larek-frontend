@@ -4,24 +4,21 @@ import {
 	IBaseView,
 	IEvents,
 	IListItemsView,
-	IProduct,
 } from '../types';
-import { CardView } from './cardView';
 
 // Описание главной страницы
-export class HomePageView implements IBaseView {
+export class HomePageView extends IBaseView {
 	constructor(eventEmitter: IEvents, container: HTMLElement) {
-		this.eventEmitter = eventEmitter;
-		this.container = container;
+		super(eventEmitter, container);
 
 		this.gallery = container.querySelector('.gallery');
 		this.cartCounter = container.querySelector('.header__basket-counter');
 
-		container.querySelector('button.header__basket').addEventListener("click", this.bindCartIconClick.bind(this));
+		container
+			.querySelector('button.header__basket')
+			.addEventListener('click', this.bindCartIconClick.bind(this));
 	}
 
-	container: HTMLElement;
-	eventEmitter: IEvents;
 	cartCounter: HTMLElement;
 	gallery: HTMLElement;
 	productsContainer: IListItemsView;
@@ -29,9 +26,9 @@ export class HomePageView implements IBaseView {
 	popupView: IBasePopupView;
 
 	// отображает карточки товаров в галерее.
-	renderProducts(products: IProduct[]): void {
-        this.gallery.append(...products.map((item) => (new CardView(this.eventEmitter, {gallery: document.querySelector('#card-catalog'), popup: document.querySelector('.card'), cart: document.querySelector('.card')}, item)).render("gallery")))
-    }
+	renderProducts(elements: HTMLElement[]): void {
+		this.gallery.replaceChildren(...elements);
+	}
 
 	// обновляет счётчик товаров в корзине.
 	updateCartCounter(count: number): void {

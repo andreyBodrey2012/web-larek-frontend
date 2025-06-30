@@ -1,4 +1,4 @@
-import { EventTypes, IEvents, IProduct } from '../types';
+import { EventTypes, IEvents } from '../types';
 import { fillPriceWithCurrency } from '../utils/utils';
 import { CardView } from './cardView';
 import { ModalView } from './modalView';
@@ -8,7 +8,6 @@ export class ModalCartView extends ModalView {
 	constructor(eventEmitter: IEvents, container: HTMLElement) {
 		super(eventEmitter, container);
 
-		this.products = [];
 		this.totalPrice = 0;
 	}
 
@@ -19,16 +18,14 @@ export class ModalCartView extends ModalView {
 	orderButton: HTMLButtonElement;
 	content: HTMLElement;
 	totalPrice: number;
-	products: IProduct[];
 
-	render(content: HTMLElement): void {
-
+	render(content: HTMLElement, cartItems?: HTMLElement[]): void {
 		this.orderButton = content.querySelector<HTMLButtonElement>(
 			'button.basket__button'
 		);
-		this.orderButton.disabled = this.products.length === 0;
+		this.orderButton.disabled = cartItems?.length === 0;
 
-    this.orderButton.addEventListener("click", this.bindOrder.bind(this));
+		this.orderButton.addEventListener('click', this.bindOrder.bind(this));
 
 		this.totalPriceElement =
 			content.querySelector<HTMLElement>('.basket__price');
@@ -37,26 +34,22 @@ export class ModalCartView extends ModalView {
 		this.containerProductItems =
 			content.querySelector<HTMLElement>('.basket__list');
 
-		this.containerProductItems.append(
-			...this.products.map((item, index) =>
-				new CardView(
-					this.eventEmitter,
-					{
-						gallery: document.querySelector('#card-catalog'),
-						popup: document.querySelector('#card-preview'),
-						cart: document.querySelector('#card-basket'),
-					},
-					item
-				).render('cart', index + 1)
-			)
+		this.containerProductItems.replaceChildren(
+			...cartItems,
+			// ...this.products.map((item, index) =>
+			// 	new CardView(this.eventEmitter, {
+			// 		type: 'cart',
+			// 		data: item,
+			// 	}).render(index + 1)
+			// )
 		);
 
 		super.render(content);
 	}
 
 	// отображает список товаров в корзине.
-	updateCartItems(cartItems: IProduct[], total: number): void {
-		this.products = cartItems;
+	// updateCartItems(cartItems: HTMLElement[], total: number): void {
+	updateCartItems(total: number): void {
 		this.updateTotalPrice(total);
 	}
 
@@ -64,12 +57,12 @@ export class ModalCartView extends ModalView {
 	updateTotalPrice(total: number): void {
 		this.totalPrice = total;
 		if (this.isOpen) {
-			this.totalPriceElement.innerText = fillPriceWithCurrency(this.totalPrice);
+			super.setText(this.totalPriceElement, fillPriceWithCurrency(this.totalPrice))
 		}
 	}
 
 	// устанавливает обработчик оформления заказа.
-	bindOrder(handler: () => void): void {
-    this.eventEmitter.emit(EventTypes.orderClicked)
-  }
+	bindOrder(): void {
+		this.eventEmitter.emit(EventTypes.orderClicked);
+	}
 }

@@ -4,58 +4,96 @@ import { fillPriceWithCurrency } from '../utils/utils';
 
 type CardTypeView = 'gallery' | 'popup' | 'cart';
 type CardContainersView = Record<CardTypeView, HTMLTemplateElement>;
+type CardCategoryColors = Record<string, string>;
 
 // Описание вьюшки карточки
-export class CardView implements IBaseView {
+export class CardView extends IBaseView {
 	constructor(
 		eventEmitter: IEvents,
-		containers: CardContainersView,
-		data: IProduct
+		{ type, data }: { type: CardTypeView; data: IProduct }
 	) {
-		this.eventEmitter = eventEmitter;
-		this.containers = containers;
+		super(eventEmitter, CardView.getContainerByType(type));		
+		this.cardType = type;
 		this.data = data;
 	}
 
-	cardElement: HTMLElement;
 	data: IProduct;
 	container: HTMLElement;
-	containers: CardContainersView;
 	eventEmitter: IEvents;
+	cardType: CardTypeView;
+
+	protected categoryColors: CardCategoryColors = {
+		'софт-скил': 'soft',
+		другое: 'other',
+		кнопка: 'button',
+		'хард-скил': 'hard',
+		дополнительное: 'additional',
+	};
+
+	static containerViewByType: CardContainersView = {
+		cart: document.querySelector('#card-basket'),
+		gallery: document.querySelector('#card-catalog'),
+		popup: document.querySelector('#card-preview'),
+	};
+	static getContainerByType(type: CardTypeView): HTMLElement {
+		return CardView.containerViewByType[type].content.cloneNode(true) as HTMLElement;
+	}
+
+	set category(value: string) {
+		const category =
+			this.container.querySelector<HTMLElement>('.card__category');
+
+		if (category) {
+			super.setText(category, value);
+			const categoryColorClassName = `card__category_${
+				value in this.categoryColors ? this.categoryColors[value] : 'additional'
+			}`;
+			category.classList.add(categoryColorClassName);
+		}
+	}
+
+	
 
 	// создаёт и возвращает HTML-элемент карточки, используя указанный шаблон и данные товара.
-	render(type: CardTypeView, position?: number): Node {
-		const card = this.containers[type].content.cloneNode(true) as HTMLElement;
+	render(position?: number): HTMLElement {
+		const card = this.container;
 
-		card.querySelector<HTMLElement>('.card__title').innerText = this.data.title;
-		card.querySelector<HTMLElement>('.card__price').innerText = this.data.price
-			? fillPriceWithCurrency(this.data.price)
-			: 'Бесценно';
+		super.setText(
+			card.querySelector<HTMLElement>('.card__title'),
+			this.data.title
+		);
+		super.setText(
+			card.querySelector<HTMLElement>('.card__price'),
+			this.data.price ? fillPriceWithCurrency(this.data.price) : 'Бесценно'
+		);
 
-		if (type !== 'cart') {
+		if (this.cardType !== 'cart') {
 			const image = card.querySelector<HTMLImageElement>('.card__image');
 			image.src = `${CDN_URL}${this.data.image}`;
 			image.alt = this.data.title;
-			card.querySelector<HTMLElement>('.card__category').innerText =
-				this.data.category;
+			this.category = this.data.category;
 		}
 
-		switch (type) {
+		switch (this.cardType) {
 			case 'gallery':
 				card
 					.querySelector<HTMLElement>('button.card')
 					.addEventListener('click', this.bindClick.bind(this));
 				break;
 			case 'cart':
-				card.querySelector<HTMLElement>('.basket__item-index').innerText =
-					String(position);
+				super.setText(
+					card.querySelector<HTMLElement>('.basket__item-index'),
+					String(position)
+				);
 				card
 					.querySelector<HTMLButtonElement>('button.card__button')
 					.addEventListener('click', this.bindRemoveItem.bind(this));
 				break;
 			case 'popup':
-				card.querySelector<HTMLElement>('.card__text').innerText =
-					this.data.description;
+				super.setText(
+					card.querySelector<HTMLElement>('.card__text'),
+					this.data.description
+				);
 				card
 					.querySelector<HTMLButtonElement>('button.card__button')
 					.addEventListener('click', this.bindClickButton.bind(this));

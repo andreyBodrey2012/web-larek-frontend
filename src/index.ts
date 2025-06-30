@@ -20,21 +20,11 @@ import { ModalItemView } from './views/modalItemView';
 import { OrderSuccessFormView } from './views/orderSuccessFormView';
 import { OrderFormView } from './views/orderView';
 import { getTemplateElementBySelector, getTotal } from './utils/utils';
+import { App } from './model/app';
 
 const eventEmitter = new EventEmitter();
 const api = new Api(API_URL);
-const appState: AppState = {
-	products: [],
-	cartItems: [],
-	previewItemId: '',
-	orderForm: {
-		data: {
-			values: {},
-			errors: null,
-		},
-		step: 'order',
-	},
-};
+const appModel = new App()
 
 const modalContainer = document.querySelector<HTMLElement>('#modal-container');
 
@@ -53,141 +43,148 @@ const orderSuccessModal = new OrderSuccessFormView(
 eventEmitter.on<{ productId: IProduct['id'] }>(
 	EventTypes.ItemSelect,
 	({ productId }) => {
-		appState.previewItemId = productId;
-		const product = appState.products.find(({ id }) => id === productId);
+		appModel.previewItemId = productId;
+		const product = appModel.getProductById(productId);
 
 		popupItemView.render(
 			new CardView(
 				eventEmitter,
 				{
-					gallery: document.querySelector('#card-catalog'),
-					popup: document.querySelector('#card-preview'),
-					cart: document.querySelector('.card'),
+					data: product,
+					type: 'popup',
 				},
-				product
-			).render('popup') as HTMLElement,
-			appState.cartItems.includes(product.id)
+			).render() as HTMLElement,
+			appModel.hasProductInCart(productId)
 		);
 		popupItemView.open();
 	}
 );
 
 eventEmitter.on(EventTypes.CartSelect, () => {
-	popupCartItem.render(getTemplateElementBySelector('#basket'));
-	appState.orderForm.step = 'order';
+	const elements = appModel.cartProducts.map((item, index) => (new CardView(eventEmitter, { data: item, type: "cart" })).render(index + 1));
+	popupCartItem.render(getTemplateElementBySelector('#basket'), elements);
 	popupCartItem.open();
 });
 
 eventEmitter.on<{ productId: IProduct['id'] }>(
 	EventTypes.ItemClicked,
 	({ productId }) => {
-		if (appState.cartItems.includes(productId)) {
-			appState.cartItems = appState.cartItems.filter((id) => id !== productId);
-			popupItemView.updateRender(false);
-		} else {
-			appState.cartItems.push(productId);
-			popupItemView.updateRender(true);
-		}
+		appModel.addCartItem(productId)
+		popupItemView.updateRender(true);
 		popupCartItem.updateCartItems(
-			appState.products.filter(({ id }) => appState.cartItems.includes(id)),
-			getTotal(appState.products, appState.cartItems),
+			appModel.total,
 		);
-		homePageView.updateCartCounter(appState.cartItems.length);
+		homePageView.updateCartCounter(appModel.cartCounter);
 	}
 );
 
 eventEmitter.on<{ productId: IProduct['id'] }>(
 	EventTypes.ItemRemoved,
 	({ productId }) => {
-		if (appState.cartItems.includes(productId)) {
-			appState.cartItems = appState.cartItems.filter((id) => id !== productId);
-			popupCartItem.updateCartItems(
-				appState.products.filter(({ id }) => appState.cartItems.includes(id)),
-				getTotal(appState.products, appState.cartItems),
-			);
-			homePageView.updateCartCounter(appState.cartItems.length);
-			popupCartItem.render(getTemplateElementBySelector('#basket'));
-		}
+		appModel.removeCartItem(productId)
+		popupCartItem.updateCartItems(
+			appModel.total,
+		);
+		const elements = appModel.cartProducts.map((item, index) => (new CardView(eventEmitter, { data: item, type: "cart" })).render(index + 1));
+		popupCartItem.render(getTemplateElementBySelector('#basket'), elements);
+		homePageView.updateCartCounter(appModel.cartCounter);
 	}
 );
 
 eventEmitter.on(EventTypes.orderClicked, () => {
-	appState.orderForm.data = {
-		values: {},
-		errors: null,
-	};
-	orderPopup.render(getTemplateElementBySelector('#order'), appState.orderForm);
+	appModel.clearOrderForm();
+	orderPopup.render(getTemplateElementBySelector('#order'), appModel.orderForm);
 	orderPopup.open();
 });
 
 eventEmitter.on<{ type: PaymentTypes }>(
 	EventTypes.PaymentSelect,
 	({ type }) => {
-		eventEmitter.emit(EventTypes.InputForm, { name: "payment", value: type });
-		orderPopup.updatePaymentType(appState.orderForm);
+		eventEmitter.emit(EventTypes.InputForm, { name: 'payment', value: type });
+		orderPopup.updatePaymentType(appModel.orderForm);
 	}
 );
 
 const orderKeys: Array<keyof IOrderForm['values']> = ['payment', 'address'];
-const contactsKeys: Array<keyof (IOrderForm['values'] & IContactsForm['values'])> = [...orderKeys, 'email', 'phone'];
+const contactsKeys: Array<
+	keyof (IOrderForm['values'] & IContactsForm['values'])
+> = [...orderKeys, 'email', 'phone'];
 
 eventEmitter.on<
 	EventInputFormData<IOrderForm['values'] | IContactsForm['values']>
->(EventTypes.InputForm, ({ name, value }) => {
-	appState.orderForm.data.values[name] = value;
+>(EventTypes.InputForm, (data) => {
+	appModel.orderFormValue = data;
 
-	const keysToValidate: Array<keyof (IOrderForm['values'] & IContactsForm['values'])> = 
-    appState.orderForm.step === 'contacts' ? contactsKeys : orderKeys;
+	const keysToValidate: Array<
+		keyof (IOrderForm['values'] & IContactsForm['values'])
+	> = appModel.orderStep === 'contacts' ? contactsKeys : orderKeys;
 
 	// TODO: if failed them add to errors!
-	appState.orderForm.data.isValid = keysToValidate.every(
+	appModel.orderForm.data.isValid = keysToValidate.every(
 		(name) =>
-			name in appState.orderForm.data.values &&
-			!!appState.orderForm.data.values[name]
+			name in appModel.orderForm.data.values &&
+			!!appModel.orderForm.data.values[name]
 	);
 
-	orderPopup.updateRender(appState.orderForm);
+	orderPopup.updateRender(appModel.orderForm);
 });
 
 eventEmitter.on(EventTypes.ActionButtonClicked, async () => {
-	 if(!appState.orderForm.data.isValid) {
-		console.error(Error)
+	if (!appModel.orderForm.data.isValid) {
+		console.error(Error);
 		return;
-	 }
+	}
 
-	 if (appState.orderForm.step === 'order') {
-		appState.orderForm.step = 'contacts';
-		orderPopup.render(getTemplateElementBySelector('#contacts'), appState.orderForm);
-	 } else if (appState.orderForm.step === 'contacts') {
-		const res = await createOrder(api, {
-			...appState.orderForm.data.values,
-			items: appState.cartItems,
-			total: getTotal(appState.products, appState.cartItems),
-		} as IOrder);
-		eventEmitter.emit(EventTypes.orderSuccessClicked);
-	 }
-})
+	if (appModel.orderStep === 'order') {
+		appModel.orderStep = 'contacts';
+		orderPopup.render(
+			getTemplateElementBySelector('#contacts'),
+			appModel.orderForm
+		);
+	} else if (appModel.orderStep === 'contacts') {
+		try {
+			await createOrder(api, {
+				...appModel.orderForm.data.values,
+				items: appModel.cartItems,
+				total: appModel.total,
+			} as IOrder);
+			eventEmitter.emit(EventTypes.orderSuccessClicked);
+		} catch (error) {
+			console.error('Ошибка:', error);
+		}
+	}
+});
 
 eventEmitter.on(EventTypes.orderSuccessClicked, () => {
 	orderSuccessModal.render(
 		getTemplateElementBySelector('#success'),
-		getTotal(appState.products, appState.cartItems),
+		appModel.total,
 	);
 	orderSuccessModal.open();
 
-	appState.cartItems = [];
-	popupCartItem.updateCartItems([], 0);
-	homePageView.updateCartCounter(appState.cartItems.length);
+	appModel.clearCartItems();
+	popupCartItem.updateCartItems(0);
+	homePageView.updateCartCounter(appModel.cartCounter);
 });
 
 eventEmitter.on(EventTypes.orderSuccessButtonClicked, () => {
-	orderSuccessModal.close()
+	orderSuccessModal.close();
+});
+
+eventEmitter.on<{ items: IProduct[] }>(EventTypes.ItemsChange, ({ items }) => {
+	appModel.products = items
+	const elements = appModel.products.map((item) => (new CardView(eventEmitter, { data: item, type: "gallery" })).render());
+	homePageView.renderProducts(elements);
 })
 
 const init = async () => {
-	const res = await getProductList(api);
-	appState.products = res.items;
-	homePageView.renderProducts(appState.products);
+	try {
+		const res = await getProductList(api);
+		eventEmitter.emit(EventTypes.ItemsChange, { items: res.items });
+	} catch(err) {
+		console.error(err)
+		eventEmitter.emit(EventTypes.ItemsChange, []);
+	}	
 };
 
 init().catch(console.error);

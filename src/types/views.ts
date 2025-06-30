@@ -2,10 +2,17 @@ import { IEvents } from './events';
 import { IProduct } from './models';
 
 export class IBaseView {
-  constructor(eventEmitter: IEvents, container: HTMLElement) {}
+  constructor(eventEmitter: IEvents, container: HTMLElement) {
+    this.eventEmitter = eventEmitter;
+    this.container = container;
+  }
 
 	container: HTMLElement;
 	eventEmitter: IEvents;
+
+  setText(element: HTMLElement, value: string): void {
+		if (element) element.innerText = value;
+	}
 }
 
 export interface IBasePopupView extends IBaseView {

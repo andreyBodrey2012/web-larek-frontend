@@ -49,19 +49,32 @@ https://github.com/andreyBodrey2012/web-larek-frontend
 
 ## Поля:
 
-- **products: Array<IProduct>** — массив объектов товаров для галереи (тип IProduct описывает свойства товара).
-- **cartItems: Array<IProduct['id']>** — массив товаров, добавленных в корзину.
-- **previewItemId: IProduct['id'] | null** — выбранный товар для показа в модальном окне (или null если ничего не выбрано).
-- **orderForm: {data: IOrderForm & IContactsForm | null; step: OrderStepTypes}** - данные форм офрмления заказа и этапы офрмления.
+- **protected _products: Array<IProduct>** - продукты.
+- **protected _cartItems: Array<IProduct['id']>** - продукты в корзине.
+- **protected _previewItemId: IProduct['id'] | null** - показывает информацию о продукте по айди.
+- **protected _orderForm: OrderForm** - поле оформления заказа.
+- **protected _total: number** - итоговая сумма продуктов в корзине.
 
 ## Методы:
 
-- **addToCart(productId: string): void** — добавляет товар с указанным productId в корзину.
-- **removeFromCart(productId: string): void** — удаляет товар из корзины по productId.
-- **setPreview(productId: string | null): void** — устанавливает текущий товар для превью (или сбрасывает).
-- **clearCart(): void** — очищает корзину.
-- **getCartCount(): number** — возвращает количество товаров в корзине.
-- **getCartTotal(): number** — рассчитывает и возвращает общую стоимость товаров в корзине.
+- **abstract set products(products: Array<IProduct>)** - возращает продукт из корзины.
+- **abstract get products(): Array<IProduct>** - передаёт продукт в корзину.
+- **abstract get total(): number** - даёт сумму продукта при отображении на главной странице.
+- **abstract get cartItems(): Array<IProduct['id']>** - даёт айди продуктов находящиеся в корзине.
+- **abstract get cartProducts(): IProduct[]** - возращает айди отфильтрованый айди продуктов из корзины.
+- **abstract get cartCounter(): number** - показывает количество продуктов в корзине при отображении на главной странице.
+- **abstract set orderStep(step: OrderStepTypes)** - устанавливает этап оформления заказа. 
+- **abstract get orderStep(): OrderStepTypes** - получает этап офрмления заказа.
+- **abstract get orderForm(): OrderForm** - поле оформления заказа.
+- **abstract set orderFormValue({ name, value }: EventInputFormData<IOrderForm['values'] | IContactsForm['values']>)** - устанавливае тзначение поля оформления заказа.
+- **abstract set previewItemId(id: IProduct['id'] | null)** - возращает айди карточки на которую нажали.
+- **abstract get previewItemId(): IProduct['id'] | null** - получает айди карточки на которую нажали.
+- **abstract addCartItem(id: IProduct["id"]): void** - добавляет продукт в корзину.
+- **abstract removeCartItem(id: IProduct["id"]): void** - удаляет продукт из корзины.
+- **abstract clearCartItems(): void** - очищает корзину.
+- **abstract clearOrderForm(): void** - очищает формы оформления заказа.
+- **abstract hasProductInCart(id: IProduct["id"]): boolean** - проверяет наличие предмета в корзине.
+- **abstract getProductById(productId: IProduct["id"]): IProduct | undefined** - получает айди предмета.
 
 ## Конструктор:
 

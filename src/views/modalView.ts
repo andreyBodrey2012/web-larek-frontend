@@ -2,10 +2,9 @@ import { IEvents } from '../types';
 import { IBaseView } from '../types/views';
 
 // Описание модального окна
-export class ModalView implements IBaseView {
+export class ModalView extends IBaseView {
 	constructor(eventEmitter: IEvents, container: HTMLElement) {
-		this.eventEmitter = eventEmitter;
-		this.container = container;
+		super(eventEmitter, container);
 		this.content = container.querySelector('.modal__content');
 
 		container
@@ -30,7 +29,6 @@ export class ModalView implements IBaseView {
 		
 	}
 
-	container: HTMLElement;
 	content: HTMLElement;
 	eventEmitter: IEvents;
 	isOpen: boolean;

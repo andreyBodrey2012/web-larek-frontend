@@ -1,6 +1,6 @@
 export enum EventTypes {
+	ItemsChange = 'items:change',
 	ItemClicked = 'item:clicked',
-	ItemAdded = 'item:clicked',
 	ItemRemoved = 'item:removed',
 	ItemSelect = 'card:select',
 	ModalClose = 'modal:close',
